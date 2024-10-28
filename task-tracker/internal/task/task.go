@@ -111,6 +111,14 @@ func ListTasks(filter string) error {
 			
 		}
 		return nil
+	case "not-done":
+		for _,t:=range tasks {
+			if t.Status == "not-done"{
+				filteredTasks = append(filteredTasks,t )
+				fmt.Printf(`%+v`,t)
+			}
+		}
+		return nil
 	case "in-progress":
 		for _,t:=range tasks {
 			if t.Status == "in-progress"{
