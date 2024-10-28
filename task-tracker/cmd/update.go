@@ -1,27 +1,38 @@
 /*
 Copyright © 2024 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
 	"fmt"
+	"strconv"
 
+	"github.com/mohamed-gudle/backend-projects-in-go/task-tracker/internal/task"
 	"github.com/spf13/cobra"
 )
 
 // updateCmd represents the update command
 var updateCmd = &cobra.Command{
 	Use:   "update",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Update Status of a task",
+	Long: ` Update the status of a task in the task tracker.`,
+	Args: cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("update called")
+		id,err:= strconv.Atoi(args[0])
+		status:=args[1]
+
+		fmt.Println(id,status,"/n")
+
+		if err!=nil {
+			fmt.Errorf(err.Error())
+		}
+
+		err=task.UpdateTask(id,status)
+
+		if err!=nil {
+			fmt.Errorf(err.Error())
+			
+		}
 	},
 }
 

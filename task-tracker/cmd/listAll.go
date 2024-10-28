@@ -1,22 +1,24 @@
 /*
 Copyright © 2024 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
-	"fmt"
-
+	"github.com/mohamed-gudle/backend-projects-in-go/task-tracker/internal/task"
 	"github.com/spf13/cobra"
 )
 
 // listAllCmd represents the listAll command
 var listAllCmd = &cobra.Command{
-	Use:   "list-all",
+	Use:   "list",
 	Short: "List all tasks",
 	Long: `List all tasks in the task tracker.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("listAll called")
+		flag:=cmd.Flag("filter")
+		filter:=flag.Value.String()
+
+		task.ListTasks(filter)
+
 	},
 }
 
@@ -32,4 +34,6 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// listAllCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
+	listAllCmd.Flags().String("filter","all","Choose the status filter: all,done,in-progress")
 }

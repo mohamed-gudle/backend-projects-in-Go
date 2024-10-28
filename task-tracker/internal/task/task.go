@@ -47,7 +47,7 @@ func AddTask(description string) error {
 
 	}
 
-	tasks = append(tasks, t)
+	tasks = append(tasks,t)
 
 	err=WriteTasks(&tasks)
 	return err
@@ -70,4 +70,57 @@ func DeleteTask(id int) error {
 
 	err=WriteTasks(&tasks)
 	return err
+}
+
+func UpdateTask(id int, status string) error {
+	tasks,err:=GetTasks()
+
+	if err!=nil {
+		fmt.Errorf(err.Error())
+		return err
+	}
+
+	for i,t:=range tasks {
+		if t.ID == id {
+			fmt.Println("updating")
+			tasks[i].Status = status
+			break
+		}
+	}
+	fmt.Printf("%+v",tasks)
+
+	err=WriteTasks(&tasks)
+	return err
+}
+
+func ListTasks(filter string) error {
+	tasks,err:=GetTasks()
+
+	if err!=nil{
+		return err
+	}
+
+	filteredTasks := make([]Task,len(tasks))
+	switch filter {
+	case "done":
+		for _,t:=range tasks {
+			if t.Status == "done"{
+				filteredTasks = append(filteredTasks,t )
+				fmt.Printf(`%+v`,t)
+			}
+			
+		}
+		return nil
+	case "in-progress":
+		for _,t:=range tasks {
+			if t.Status == "in-progress"{
+				filteredTasks = append(filteredTasks,t )
+				fmt.Printf(`%+v`,t)
+			}
+		}
+		return nil
+	default:
+		fmt.Printf(`%+v`,tasks)
+		return nil
+	}
 }
