@@ -28,11 +28,13 @@ func (t *Task) SetStatus(status string) {
 func GetTasks() ([]Task, error) {
 	var tasks []Task
 	err:=ReadTasks(&tasks)
-	fmt.Printf("%+v/n",tasks)
 	return tasks, err
 }
 
-func AddTask(t Task) error {
+func AddTask(description string) error {
+
+	t:= *NewTask(6,description,"in-progress")
+
 	tasks,err := GetTasks()
 
 	if err != nil {
@@ -46,6 +48,25 @@ func AddTask(t Task) error {
 	}
 
 	tasks = append(tasks, t)
+
+	err=WriteTasks(&tasks)
+	return err
+}
+
+func DeleteTask(id int) error {
+	tasks,err:=GetTasks()
+
+	if err!=nil {
+		fmt.Errorf(err.Error())
+		return err
+	}
+
+	for i,t:=range tasks {
+		if t.ID == id {
+			tasks = append(tasks[:i],tasks[i+1:]...)
+			break
+		}
+	}
 
 	err=WriteTasks(&tasks)
 	return err

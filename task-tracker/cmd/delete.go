@@ -1,27 +1,46 @@
 /*
 Copyright © 2024 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
 	"fmt"
+	"strconv"
 
+	"github.com/mohamed-gudle/backend-projects-in-go/task-tracker/internal/task"
 	"github.com/spf13/cobra"
 )
 
 // deleteCmd represents the delete command
 var deleteCmd = &cobra.Command{
 	Use:   "delete",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Delete a task",
+	Long: `Delete a task from the task tracker.`,
+	ValidArgs: []string{"1"},
+	Args:  func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return fmt.Errorf("requires an integer argument")
+		}
+		if _, err := strconv.Atoi(args[0]); err != nil {
+			return fmt.Errorf("invalid integer: %v", args[0])
+		}
+		return nil
+	},
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("delete called")
+		id,err:=strconv.Atoi(args[0])
+
+		if err!=nil {
+			fmt.Errorf(err.Error())
+		}
+
+
+		err=task.DeleteTask(id)
+
+		if err!=nil {
+			fmt.Errorf(err.Error())
+			
+		}
+
 	},
 }
 
