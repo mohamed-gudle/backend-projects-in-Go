@@ -12,4 +12,5 @@ type ShortURL struct {
 	OriginalURL string `gorm:"not null"`
 	CreateAt time.Time `gorm:"autoCreateTime"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime"`
+	Visited int `gorm:"default:0"`
 }

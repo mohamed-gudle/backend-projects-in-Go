@@ -4,9 +4,9 @@ import "gorm.io/gorm"
 
 type IShortURLRepository interface {
 	CreateShortURL(shorCode, url string) error
-	// GetShortURL(shortCode string) (*ShortURL, error)
-	// UpdateShortURL(shortCode, url string) error
-	// DeleteShortURL(shortCode string) error
+	GetShortURL(shortCode string) (*ShortURL, error)
+	UpdateShortURL(shortCode, url string) error
+	DeleteShortURL(shortCode string) error
 }
 
 type shortURLRepository struct {
@@ -19,16 +19,33 @@ func NewShortURLRepository(db *gorm.DB) *shortURLRepository {
 
 func (r *shortURLRepository) CreateShortURL(shortCode, url string) error {
 	shortURL := ShortURL{ShortCode: shortCode, OriginalURL: url}
-	createStudentTableSQL := `CREATE TABLE "short_urls" (
-		"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-		"short_code" varchar(255) NOT NULL,
-		"original_url" varchar(255) NOT NULL,
-		"created_at" datetime NOT NULL,
-		"updated_at" datetime NOT NULL
-	  );` // SQL Statement for Create Table
-	r.db.Exec(createStudentTableSQL);
+	r.db.AutoMigrate(&ShortURL{})
 	
-	result:=r.db.Table("short_urls").Create(&shortURL)
+	result:=r.db.Create(&shortURL)
 
+	return result.Error
+}
+
+func (r *shortURLRepository) GetShortURL(shortCode string) (*ShortURL, error) {
+	var shortURL ShortURL
+	result := r.db.Where("short_code = ?", shortCode).First(&shortURL)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	db:=r.db.Model(&shortURL).Update("visited", shortURL.Visited+1)
+	if db.Error != nil {
+		return nil, db.Error
+	}
+
+	return &shortURL, result.Error
+}
+
+func (r *shortURLRepository) UpdateShortURL(shortCode, url string) error {
+	result:=r.db.Model(&ShortURL{}).Where("short_code = ?", shortCode).Update("original_url", url)
+	return result.Error
+}
+
+func (r *shortURLRepository) DeleteShortURL(shortCode string) error {
+	result:=r.db.Model(&ShortURL{}).Where("short_code = ?", shortCode).Delete(&ShortURL{})
 	return result.Error
 }
